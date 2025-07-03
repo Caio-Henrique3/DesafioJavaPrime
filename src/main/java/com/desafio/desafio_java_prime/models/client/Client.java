@@ -19,6 +19,7 @@ public class Client {
 
     @Id
     @EqualsAndHashCode.Include
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     private String name;
@@ -36,8 +37,8 @@ public class Client {
 
     @PrePersist
     public void generateId() {
-        if (id == null) {
-            id = UUID.randomUUID();
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
         }
     }
 

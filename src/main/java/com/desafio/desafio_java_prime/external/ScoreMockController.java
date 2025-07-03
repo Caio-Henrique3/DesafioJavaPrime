@@ -1,5 +1,6 @@
 package com.desafio.desafio_java_prime.external;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("/score")
+@Tag(name = "Scores")
 public class ScoreMockController {
 
     @GetMapping("/{document}")
