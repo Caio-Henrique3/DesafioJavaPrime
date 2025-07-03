@@ -31,7 +31,8 @@ public class ClientController {
     }
 
     @PostMapping
-    public ResponseEntity<ClientResponseDto> createClient(@Validated @RequestBody ClientRequestDto clientDto) {
+    public ResponseEntity<ClientResponseDto> createClient(
+            @Validated @RequestBody ClientRequestDto clientDto) {
         ClientResponseDto savedClient = service.createClient(clientDto);
 
         URI uri = ServletUriComponentsBuilder
@@ -41,6 +42,12 @@ public class ClientController {
                 .toUri();
 
         return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ClientResponseDto> updateClient(
+            @PathVariable UUID id, @Validated @RequestBody ClientRequestDto dto) {
+        return ResponseEntity.ok(service.updateClient(id, dto));
     }
 
     @DeleteMapping("/{id}")

@@ -26,9 +26,7 @@ public class ClientService {
     }
 
     public ClientResponseDto getClientById(UUID id) {
-        return repository.findById(id)
-                .map(ClientResponseDto::fromEntity)
-                .orElseThrow(() -> new NotFoundException("Client not found with id: " + id));
+        return ClientResponseDto.fromEntity(getClient(id));
     }
 
     @Transactional
@@ -53,8 +51,7 @@ public class ClientService {
 
     @Transactional
     public ClientResponseDto updateClient(UUID id, ClientRequestDto clientDto) {
-        Client client = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Client not found with id: " + id));
+        Client client = getClient(id);
 
         if (repository.existsByEmailAndIdNot(clientDto.getEmail(), id)) {
             throw new BusinessException("Client with this email already exists.");
@@ -74,9 +71,14 @@ public class ClientService {
 
     @Transactional
     public void deleteClient(UUID id) {
-        getClientById(id);
+        getClient(id);
 
         repository.deleteById(id);
+    }
+
+    private Client getClient(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Client not found with id: " + id));
     }
 
 }
