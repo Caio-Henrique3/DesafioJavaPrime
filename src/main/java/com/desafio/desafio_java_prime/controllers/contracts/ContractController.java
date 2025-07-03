@@ -2,6 +2,7 @@ package com.desafio.desafio_java_prime.controllers.contracts;
 
 import com.desafio.desafio_java_prime.controllers.contracts.dto.ContractRequestDto;
 import com.desafio.desafio_java_prime.controllers.contracts.dto.ContractResponseDto;
+import com.desafio.desafio_java_prime.exceptions.NotFoundException;
 import com.desafio.desafio_java_prime.models.contract.Contract;
 import com.desafio.desafio_java_prime.services.contract.ContractService;
 import jakarta.validation.Valid;
@@ -73,6 +74,10 @@ public class ContractController {
         Contract contract = service.getContract(id);
         Path path = Path.of(contract.getFilePath());
         Resource resource = new UrlResource(path.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new NotFoundException("File not found for contract id: " + id);
+        }
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName())
