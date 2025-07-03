@@ -4,6 +4,8 @@ import com.desafio.desafio_java_prime.controllers.contracts.dto.ContractRequestD
 import com.desafio.desafio_java_prime.controllers.contracts.dto.ContractResponseDto;
 import com.desafio.desafio_java_prime.exceptions.BusinessException;
 import com.desafio.desafio_java_prime.exceptions.NotFoundException;
+import com.desafio.desafio_java_prime.external.CreditScoreClient;
+import com.desafio.desafio_java_prime.external.CreditScoreResponse;
 import com.desafio.desafio_java_prime.models.client.Client;
 import com.desafio.desafio_java_prime.models.contract.Contract;
 import com.desafio.desafio_java_prime.repositories.contract.ContractRepository;
@@ -30,6 +32,8 @@ public class ContractService {
 
     private final ClientService clientService;
 
+    private final CreditScoreClient creditScoreClient;
+
     public List<ContractResponseDto> getAllContracts() {
         return repository.findAll().stream()
                 .map(ContractResponseDto::fromEntity)
@@ -55,6 +59,8 @@ public class ContractService {
     public ContractResponseDto createContract(ContractRequestDto dto) {
         Client client = clientService.getClient(dto.getClientId());
 
+        validationScore(client);
+
         Contract contract = Contract.builder()
                 .client(client)
                 .amount(dto.getAmount())
@@ -77,6 +83,8 @@ public class ContractService {
 
         if (!contract.getClient().getId().equals(dto.getClientId())) {
             Client client = clientService.getClient(dto.getClientId());
+
+            validationScore(client);
 
             contract.setClient(client);
         }
@@ -128,6 +136,15 @@ public class ContractService {
             repository.save(contract);
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload file", e);
+        }
+    }
+
+    private void validationScore(Client client) {
+        CreditScoreResponse scoreResponse = creditScoreClient.getScore(client.getDocument());
+
+        if (scoreResponse.score() < 200) {
+            throw new BusinessException(
+                    "Client has insufficient credit score: " + scoreResponse.score());
         }
     }
 
