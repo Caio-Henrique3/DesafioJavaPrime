@@ -3,6 +3,7 @@ package com.desafio.desafio_java_prime.controllers.clients;
 import com.desafio.desafio_java_prime.controllers.clients.dto.ClientRequestDto;
 import com.desafio.desafio_java_prime.controllers.clients.dto.ClientResponseDto;
 import com.desafio.desafio_java_prime.services.client.ClientService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("clients")
 @RequiredArgsConstructor
+@Tag(name = "Clients")
 public class ClientController {
 
     private final ClientService service;

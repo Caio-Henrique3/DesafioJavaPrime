@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: CHAR(36)
+                  type: BINARY(16)
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -23,7 +23,7 @@ databaseChangeLog:
                   type: DECIMAL(10,2)
               - column:
                   name: client_id
-                  type: CHAR(36)
+                  type: BINARY(16)
                   constraints:
                     nullable: false
         - addForeignKeyConstraint:

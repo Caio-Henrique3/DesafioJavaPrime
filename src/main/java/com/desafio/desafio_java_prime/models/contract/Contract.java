@@ -19,6 +19,7 @@ public class Contract {
 
     @Id
     @EqualsAndHashCode.Include
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "file_path")

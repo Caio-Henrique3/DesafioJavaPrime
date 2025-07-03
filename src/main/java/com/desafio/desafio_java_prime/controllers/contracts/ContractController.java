@@ -5,6 +5,7 @@ import com.desafio.desafio_java_prime.controllers.contracts.dto.ContractResponse
 import com.desafio.desafio_java_prime.exceptions.NotFoundException;
 import com.desafio.desafio_java_prime.models.contract.Contract;
 import com.desafio.desafio_java_prime.services.contract.ContractService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/contracts")
 @RequiredArgsConstructor
+@Tag(name = "Contracts")
 public class ContractController {
 
     private final ContractService service;
