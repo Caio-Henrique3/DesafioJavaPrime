@@ -25,6 +25,11 @@ public class ClientService {
                 .toList();
     }
 
+    public Client getClient(UUID id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Client not found with id: " + id));
+    }
+
     public ClientResponseDto getClientById(UUID id) {
         return ClientResponseDto.fromEntity(getClient(id));
     }
@@ -74,11 +79,6 @@ public class ClientService {
         getClient(id);
 
         repository.deleteById(id);
-    }
-
-    private Client getClient(UUID id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Client not found with id: " + id));
     }
 
 }

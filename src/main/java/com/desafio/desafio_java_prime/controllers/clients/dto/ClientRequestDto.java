@@ -3,7 +3,6 @@ package com.desafio.desafio_java_prime.controllers.clients.dto;
 import com.desafio.desafio_java_prime.validation.CpfCnpj;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
