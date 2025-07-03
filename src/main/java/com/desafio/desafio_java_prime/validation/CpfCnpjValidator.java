@@ -10,13 +10,14 @@ public class CpfCnpjValidator implements ConstraintValidator<CpfCnpj, String> {
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) return false;
 
-        String document = value.replaceAll("\\D", ""); // remove pontos, traços etc
+        String document = value.replaceAll("\\D", "");
 
         if (document.length() == 11) {
             return isValidCpf(document);
         } else if (document.length() == 14) {
             return isValidCnpj(document);
         }
+
         return false;
     }
 
@@ -69,4 +70,5 @@ public class CpfCnpjValidator implements ConstraintValidator<CpfCnpj, String> {
             return false;
         }
     }
+
 }

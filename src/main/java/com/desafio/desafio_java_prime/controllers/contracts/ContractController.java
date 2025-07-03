@@ -1,0 +1,94 @@
+package com.desafio.desafio_java_prime.controllers.contracts;
+
+import com.desafio.desafio_java_prime.controllers.contracts.dto.ContractRequestDto;
+import com.desafio.desafio_java_prime.controllers.contracts.dto.ContractResponseDto;
+import com.desafio.desafio_java_prime.exceptions.NotFoundException;
+import com.desafio.desafio_java_prime.models.contract.Contract;
+import com.desafio.desafio_java_prime.services.contract.ContractService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/contracts")
+@RequiredArgsConstructor
+public class ContractController {
+
+    private final ContractService service;
+
+    @GetMapping
+    public ResponseEntity<List<ContractResponseDto>> getAllContracts() {
+        return ResponseEntity.ok(service.getAllContracts());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ContractResponseDto> getContractById(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.getContractById(id));
+    }
+
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<ContractResponseDto>> getContractsByClient(@PathVariable UUID clientId) {
+        return ResponseEntity.ok(service.getContractByClientId(clientId));
+    }
+
+    @PostMapping
+    public ResponseEntity<ContractResponseDto> createContract(@Valid @RequestBody ContractRequestDto requestDto) {
+        ContractResponseDto savedContract = service.createContract(requestDto);
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedContract.id())
+                .toUri();
+
+        return ResponseEntity.created(uri).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ContractResponseDto> updateContract(@PathVariable UUID id,
+                                                              @Valid @RequestBody ContractRequestDto requestDto) {
+        return ResponseEntity.ok(service.update(id, requestDto));
+    }
+
+    @PostMapping("/{id}/upload")
+    public ResponseEntity<Void> uploadContractFile(@PathVariable UUID id,
+                                                   @RequestParam("file") MultipartFile file) {
+        service.uploadFile(id, file);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<Resource> downloadFile(@PathVariable UUID id) throws IOException {
+        Contract contract = service.getContract(id);
+        Path path = Path.of(contract.getFilePath());
+        Resource resource = new UrlResource(path.toUri());
+
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new NotFoundException("File not found for contract id: " + id);
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName())
+                .body(resource);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContract(@PathVariable UUID id) {
+        service.deleteContract(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+}
