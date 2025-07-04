@@ -1,6 +1,11 @@
 spring:
   application:
     name: DesafioJavaPrime
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
 
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3307}/${MYSQL_DATABASE:java_prime}
@@ -19,4 +24,4 @@ server:
 
 external:
   credit-score:
-    base-url: http://localhost:9090
+    base-url: http://localhost:8080/java_prime

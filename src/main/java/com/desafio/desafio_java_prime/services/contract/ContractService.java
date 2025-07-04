@@ -120,9 +120,17 @@ public class ContractService {
         }
 
         Contract contract = getContract(contractId);
-
         try {
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            if (Objects.nonNull(contract.getFilePath())) {
+                Path oldFilePath = Path.of(contract.getFilePath());
+                if (Files.exists(oldFilePath)) {
+                    Files.delete(oldFilePath);
+                }
+            }
+
+            String sanitizedFileName = Paths.get(
+                    Objects.requireNonNull(file.getOriginalFilename())).getFileName().toString();
+            String fileName = UUID.randomUUID() + "_" + sanitizedFileName;
             Path uploadPath = Paths.get("uploads/contracts");
 
             if (!Files.exists(uploadPath)) {

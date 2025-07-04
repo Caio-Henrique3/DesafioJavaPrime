@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,24 +65,27 @@ public class ContractController {
         return ResponseEntity.ok(service.update(id, requestDto));
     }
 
-    @PostMapping("/{id}/upload")
+    @PostMapping(path = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> uploadContractFile(@PathVariable UUID id,
                                                    @RequestParam("file") MultipartFile file) {
         service.uploadFile(id, file);
+
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}/file")
     public ResponseEntity<Resource> downloadFile(@PathVariable UUID id) throws IOException {
         Contract contract = service.getContract(id);
-        Path path = Path.of(contract.getFilePath());
-        Resource resource = new UrlResource(path.toUri());
 
+        Path path = Path.of(contract.getFilePath());
+
+        Resource resource = new UrlResource(path.toUri());
         if (!resource.exists() || !resource.isReadable()) {
             throw new NotFoundException("File not found for contract id: " + id);
         }
 
         return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName())
                 .body(resource);
     }
