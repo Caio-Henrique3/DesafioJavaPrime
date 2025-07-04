@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1b16bdec-0658-4724-bc71-697d018ddccc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/desafio/desafio_java_prime/configs/WebClientConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/desafio/desafio_java_prime/external/CreditScoreClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/desafio/desafio_java_prime/external/CreditScoreClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/desafio/desafio_java_prime/external/ScoreMockController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/desafio/desafio_java_prime/external/ScoreMockController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/configs/OpenApiConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/configs/OpenApiConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/configs/WebClientConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/configs/WebClientConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/external/CreditScoreClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/external/CreditScoreClient.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/external/ScoreMockController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/desafio/desafio_java_prime/external/ScoreMockController.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Record" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="2zLV01Ozx1YMjSuuyB9XxwKxF3y" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.DesafioJavaPrimeApplication.executor": "Debug",
+    "Maven.DesafioJavaPrime [clean,install].executor": "Run",
+    "Maven.DesafioJavaPrime [clean].executor": "Run",
+    "Maven.DesafioJavaPrime [org.apache.maven.plugins:maven-clean-plugin:3.3.2:clean].executor": "Run",
+    "Maven.DesafioJavaPrime [org.apache.maven.plugins:maven-install-plugin:3.1.2:install].executor": "Run",
+    "Maven.DesafioJavaPrime [package].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "feature/swagger",
+    "last_opened_file_path": "/home/caio-henrique/Meus Projetos/DesafioJavaPrime/backend"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="com.desafio.desafio_java_prime.validation" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.desafio.desafio_java_prime.controllers.clients" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="DesafioJavaPrimeApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.desafio.desafio_java_prime.DesafioJavaPrimeApplication" />
+      <module name="DesafioJavaPrime" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.desafio.desafio_java_prime.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.DesafioJavaPrimeApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1b16bdec-0658-4724-bc71-697d018ddccc" name="Changes" comment="" />
+      <created>1751510113619</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751510113619</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/desafio/desafio_java_prime/services/contract/ContractService.java</url>
+          <line>59</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/desafio/desafio_java_prime/services/contract/ContractService.java</url>
+          <line>142</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

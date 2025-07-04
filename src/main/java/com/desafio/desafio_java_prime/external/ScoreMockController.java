@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/score")
+@RequestMapping("/scores")
 @Tag(name = "Scores")
 public class ScoreMockController {
 

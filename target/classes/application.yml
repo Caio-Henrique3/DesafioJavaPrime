@@ -19,4 +19,4 @@ server:
 
 external:
   credit-score:
-    base-url: http://localhost:9090
+    base-url: http://localhost:8080/java_prime
