@@ -10,6 +10,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +36,13 @@ public class ContractController {
     private final ContractService service;
 
     @GetMapping
-    public ResponseEntity<List<ContractResponseDto>> getAllContracts() {
-        return ResponseEntity.ok(service.getAllContracts());
+    public ResponseEntity<Page<ContractResponseDto>> getAllContracts(
+            @PageableDefault(
+                    sort = {"id"},
+                    direction = Sort.Direction.ASC
+            ) Pageable pageable
+    ) {
+        return ResponseEntity.ok(service.getAllContracts(pageable));
     }
 
     @GetMapping("/{id}")
@@ -42,8 +51,14 @@ public class ContractController {
     }
 
     @GetMapping("/client/{clientId}")
-    public ResponseEntity<List<ContractResponseDto>> getContractsByClient(@PathVariable UUID clientId) {
-        return ResponseEntity.ok(service.getContractByClientId(clientId));
+    public ResponseEntity<Page<ContractResponseDto>> getContractsByClient(
+            @PathVariable UUID clientId,
+            @PageableDefault(
+                    sort = {"id"},
+                    direction = Sort.Direction.ASC
+            ) Pageable pageable
+    ) {
+        return ResponseEntity.ok(service.getContractByClientId(clientId, pageable));
     }
 
     @PostMapping
