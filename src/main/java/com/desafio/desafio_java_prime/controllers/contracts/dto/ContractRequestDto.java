@@ -4,6 +4,7 @@ package com.desafio.desafio_java_prime.controllers.contracts.dto;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
+@Builder
 public class ContractRequestDto {
 
     @NotNull(message = "Client ID is required")
