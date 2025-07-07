@@ -14,13 +14,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -333,6 +337,84 @@ class ContractServiceTest {
         assertEquals("Client has insufficient credit score: 150", exception.getMessage());
 
         verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldDeleteContractWithoutFile() {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+        Contract contract = buildValidContract();
+        contract.setFilePath(null);
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+
+        // Act
+        contractService.deleteContract(contractId);
+
+        // Assert
+        verify(repository).delete(contract);
+    }
+
+    @Test
+    void shouldDeleteContractWithExistingFile() throws IOException {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+        Contract contract = buildValidContract();
+
+        Path filePath = Files.createTempFile("contract", ".pdf");
+        contract.setFilePath(filePath.toString());
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+
+        // Act
+        contractService.deleteContract(contractId);
+
+        // Assert
+        assertFalse(Files.exists(filePath));
+
+        verify(repository).delete(contract);
+    }
+
+    @Test
+    void shouldThrowRuntimeExceptionWhenFileDeletionFails() {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+        Contract contract = buildValidContract();
+
+        contract.setFilePath("/invalid/path/to/file.pdf");
+
+        Path path = Path.of(contract.getFilePath());
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+
+        // Act & Assert
+        try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.deleteIfExists(path))
+                    .thenThrow(new IOException("Failed to delete file"));
+
+            RuntimeException ex = assertThrows(RuntimeException.class,
+                    () -> contractService.deleteContract(contractId));
+
+            assertTrue(ex.getMessage().contains("Error deleting file"));
+
+            verify(repository, never()).delete(contract);
+        }
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionWhenDeletingNonexistentContract() {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+
+        when(repository.findById(contractId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        NotFoundException ex = assertThrows(NotFoundException.class,
+                () -> contractService.deleteContract(contractId));
+
+        assertEquals("Contract not found with id: " + contractId, ex.getMessage());
+
+        verify(repository, never()).delete(any());
     }
 
     private Pageable buildPageable() {
