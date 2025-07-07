@@ -20,11 +20,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -415,6 +419,135 @@ class ContractServiceTest {
         assertEquals("Contract not found with id: " + contractId, ex.getMessage());
 
         verify(repository, never()).delete(any());
+    }
+
+    @Test
+    void shouldUpdateContractFilePath() throws IOException {
+        UUID contractId = UUID.randomUUID();
+        Contract contract = buildValidContract();
+
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getOriginalFilename()).thenReturn("file.pdf");
+        when(file.getInputStream()).thenReturn(mock(InputStream.class));
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+
+        Path uploadPath = Paths.get("uploads/contracts");
+
+        try (MockedStatic<Files> filesMock = mockStatic(Files.class)) {
+            filesMock.when(() ->
+                    Files.exists(uploadPath)).thenReturn(true);
+            filesMock.when(() ->
+                    Files.copy(
+                            any(InputStream.class),
+                            any(Path.class),
+                            eq(StandardCopyOption.REPLACE_EXISTING))
+            ).thenReturn(1L);
+
+            contractService.uploadFile(contractId, file);
+
+            assertNotNull(contract.getFilePath());
+
+            verify(repository).save(contract);
+        }
+    }
+
+    @Test
+    void shouldDeletePreviousFileIfExists() throws IOException {
+        UUID contractId = UUID.randomUUID();
+        Contract contract = buildValidContract();
+
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getOriginalFilename()).thenReturn("newfile.pdf");
+
+        Path oldFilePath = Files.createTempFile("oldFile", ".pdf");
+        contract.setFilePath(oldFilePath.toString());
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+
+        try (MockedStatic<Files> filesMock = mockStatic(Files.class)) {
+            filesMock.when(() ->
+                    Files.exists(oldFilePath)).thenReturn(true);
+            filesMock.when(() ->
+                    Files.delete(oldFilePath)).thenAnswer(invocation -> null);
+            filesMock.when(() ->
+                    Files.createDirectories(any())).thenReturn(null);
+            filesMock.when(() ->
+                    Files.copy(
+                            any(InputStream.class),
+                            any(Path.class),
+                            eq(StandardCopyOption.REPLACE_EXISTING))
+            ).thenReturn(1L);
+
+            contractService.uploadFile(contractId, file);
+
+            filesMock.verify(() -> Files.delete(oldFilePath));
+        }
+    }
+
+    @Test
+    void shouldSaveNewFileCorrectly() throws IOException {
+        UUID contractId = UUID.randomUUID();
+        Contract contract = buildValidContract();
+
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("application/pdf");
+        when(file.getOriginalFilename()).thenReturn("file.pdf");
+        when(file.getInputStream()).thenReturn(mock(InputStream.class));
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+
+        Path uploadPath = Paths.get("uploads/contracts");
+        try (MockedStatic<Files> filesMock = mockStatic(Files.class)) {
+            filesMock.when(() -> Files.exists(uploadPath)).thenReturn(true);
+            filesMock.when(() ->
+                    Files.copy(
+                            any(InputStream.class),
+                            any(Path.class),
+                            eq(StandardCopyOption.REPLACE_EXISTING))
+            ).thenReturn(1L);
+
+            contractService.uploadFile(contractId, file);
+
+            filesMock.verify(() ->
+                    Files.copy(any(InputStream.class), any(Path.class), any(StandardCopyOption.class)));
+        }
+    }
+
+    @Test
+    void shouldThrowBusinessExceptionIfFileIsNotPdf() {
+        // Arrange
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("image/png");
+
+        // Act & Assert
+        BusinessException ex = assertThrows(BusinessException.class, () ->
+                contractService.uploadFile(UUID.randomUUID(), file));
+
+        assertEquals("Only PDF files are allowed.", ex.getMessage());
+
+        verifyNoInteractions(repository);
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionIfContractNotFound() {
+        UUID contractId = UUID.randomUUID();
+
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("application/pdf");
+        when(repository.findById(contractId)).thenReturn(Optional.empty());
+
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> {
+            contractService.uploadFile(contractId, file);
+        });
+
+        assertEquals("Contract not found with id: " + contractId, ex.getMessage());
     }
 
     private Pageable buildPageable() {
