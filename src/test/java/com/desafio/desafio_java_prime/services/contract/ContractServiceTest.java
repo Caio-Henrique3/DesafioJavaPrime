@@ -543,9 +543,8 @@ class ContractServiceTest {
         when(file.getContentType()).thenReturn("application/pdf");
         when(repository.findById(contractId)).thenReturn(Optional.empty());
 
-        NotFoundException ex = assertThrows(NotFoundException.class, () -> {
-            contractService.uploadFile(contractId, file);
-        });
+        NotFoundException ex = assertThrows(NotFoundException.class,
+                () -> contractService.uploadFile(contractId, file));
 
         assertEquals("Contract not found with id: " + contractId, ex.getMessage());
     }
