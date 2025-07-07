@@ -77,7 +77,7 @@ public class ContractController {
     @PutMapping("/{id}")
     public ResponseEntity<ContractResponseDto> updateContract(@PathVariable UUID id,
                                                               @Valid @RequestBody ContractRequestDto requestDto) {
-        return ResponseEntity.ok(service.update(id, requestDto));
+        return ResponseEntity.ok(service.updateContract(id, requestDto));
     }
 
     @PostMapping(path = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -77,7 +77,7 @@ public class ContractService {
     }
 
     @Transactional
-    public ContractResponseDto update(UUID id, ContractRequestDto dto) {
+    public ContractResponseDto updateContract(UUID id, ContractRequestDto dto) {
         if (dto.getStartDate().isAfter(dto.getEndDate())) {
             throw new BusinessException("Start date cannot be after end date.");
         }

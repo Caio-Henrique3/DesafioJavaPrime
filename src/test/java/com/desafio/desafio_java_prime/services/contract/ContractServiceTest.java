@@ -208,13 +208,139 @@ class ContractServiceTest {
         verify(repository, never()).save(any());
     }
 
+    @Test
+    void shouldUpdateContractSuccessfullyWithSameClient() {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+        Contract contract = buildValidContract();
+        contract.setId(contractId);
+
+        ContractRequestDto dto = buildValidContractRequestDto();
+        dto.setClientId(contract.getClient().getId());
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+        when(repository.save(any(Contract.class))).thenReturn(contract);
+
+        // Act
+        ContractResponseDto result = contractService.updateContract(contractId, dto);
+
+        // Assert
+        assertNotNull(result);
+
+        assertEquals(contractId, result.id());
+        assertEquals(contract.getClient().getId(), result.clientId());
+
+        verify(repository, times(1)).save(contract);
+    }
+
+    @Test
+    void shouldUpdateContractWithDifferentClientAndValidScore() {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+        UUID newClientId = UUID.randomUUID();
+
+        Contract contract = buildValidContract();
+
+        Client newClient = Client.builder()
+                .id(newClientId)
+                .name("New Client")
+                .document("99999999999")
+                .build();
+
+        ContractRequestDto dto = buildValidContractRequestDto();
+        dto.setClientId(newClientId);
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+        when(clientService.getClient(newClientId)).thenReturn(newClient);
+        when(creditScoreClient.getScore(newClient.getDocument()))
+                .thenReturn(new CreditScoreResponse(newClient.getDocument(), 700));
+        when(repository.save(any(Contract.class))).thenReturn(contract);
+
+        // Act
+        ContractResponseDto result = contractService.updateContract(contractId, dto);
+
+        // Assert
+        assertNotNull(result);
+
+        assertEquals(newClientId, contract.getClient().getId());
+
+        verify(repository, times(1)).save(contract);
+    }
+
+    @Test
+    void shouldThrowBusinessExceptionWhenStartDateIsAfterEndDate() {
+        // Arrange
+        ContractRequestDto dto = buildValidContractRequestDto();
+        dto.setStartDate(dto.getEndDate().plusDays(1));
+
+        // Act & Assert
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> contractService.updateContract(UUID.randomUUID(), dto)
+        );
+
+        assertEquals("Start date cannot be after end date.", exception.getMessage());
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowNotFoundExceptionWhenUpdatingNonexistentContract() {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+        ContractRequestDto dto = buildValidContractRequestDto();
+
+        when(repository.findById(contractId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> contractService.updateContract(contractId, dto)
+        );
+
+        assertEquals("Contract not found with id: " + contractId, exception.getMessage());
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowBusinessExceptionWhenNewClientScoreIsLow() {
+        // Arrange
+        UUID contractId = UUID.randomUUID();
+        UUID newClientId = UUID.randomUUID();
+
+        Contract contract = buildValidContract();
+
+        Client newClient = Client.builder()
+                .id(newClientId)
+                .name("Low Score Client")
+                .document("88888888888")
+                .build();
+
+        ContractRequestDto dto = buildValidContractRequestDto();
+        dto.setClientId(newClientId);
+
+        when(repository.findById(contractId)).thenReturn(Optional.of(contract));
+        when(clientService.getClient(newClientId)).thenReturn(newClient);
+        when(creditScoreClient.getScore(newClient.getDocument()))
+                .thenReturn(new CreditScoreResponse(newClient.getDocument(), 150));
+
+        // Act & Assert
+        BusinessException exception = assertThrows(
+                BusinessException.class,
+                () -> contractService.updateContract(contractId, dto)
+        );
+
+        assertEquals("Client has insufficient credit score: 150", exception.getMessage());
+
+        verify(repository, never()).save(any());
+    }
+
     private Pageable buildPageable() {
         return PageRequest.of(0, 10);
     }
 
     private Contract buildValidContract() {
         return Contract.builder()
-                .id(UUID.randomUUID())
                 .contractNumber("ABC123")
                 .amount(new BigDecimal("10000"))
                 .startDate(LocalDate.of(2024, 1, 1))
