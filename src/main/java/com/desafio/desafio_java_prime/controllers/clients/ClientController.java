@@ -5,13 +5,16 @@ import com.desafio.desafio_java_prime.controllers.clients.dto.ClientResponseDto;
 import com.desafio.desafio_java_prime.services.client.ClientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -23,8 +26,13 @@ public class ClientController {
     private final ClientService service;
 
     @GetMapping
-    public ResponseEntity<List<ClientResponseDto>> getAllClients() {
-        return ResponseEntity.ok(service.getAllClients());
+    public ResponseEntity<Page<ClientResponseDto>> getAllClients(
+            @PageableDefault(
+                    sort = {"id"},
+                    direction = Sort.Direction.ASC
+            ) Pageable pageable
+    ) {
+        return ResponseEntity.ok(service.getAllClients(pageable));
     }
 
     @GetMapping("/{id}")

@@ -12,6 +12,8 @@ import com.desafio.desafio_java_prime.repositories.contract.ContractRepository;
 import com.desafio.desafio_java_prime.services.client.ClientService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -34,16 +35,14 @@ public class ContractService {
 
     private final CreditScoreClient creditScoreClient;
 
-    public List<ContractResponseDto> getAllContracts() {
-        return repository.findAll().stream()
-                .map(ContractResponseDto::fromEntity)
-                .toList();
+    public Page<ContractResponseDto> getAllContracts(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(ContractResponseDto::fromEntity);
     }
 
-    public List<ContractResponseDto> getContractByClientId(UUID clientId) {
-        return repository.findByClientId(clientId).stream()
-                .map(ContractResponseDto::fromEntity)
-                .toList();
+    public Page<ContractResponseDto> getContractByClientId(UUID clientId, Pageable pageable) {
+        return repository.findByClientId(clientId, pageable)
+                .map(ContractResponseDto::fromEntity);
     }
 
     public Contract getContract(UUID id) {
@@ -57,6 +56,10 @@ public class ContractService {
 
     @Transactional
     public ContractResponseDto createContract(ContractRequestDto dto) {
+        if (dto.getStartDate().isAfter(dto.getEndDate())) {
+            throw new BusinessException("Start date cannot be after end date.");
+        }
+
         Client client = clientService.getClient(dto.getClientId());
 
         validationScore(client);
@@ -74,7 +77,7 @@ public class ContractService {
     }
 
     @Transactional
-    public ContractResponseDto update(UUID id, ContractRequestDto dto) {
+    public ContractResponseDto updateContract(UUID id, ContractRequestDto dto) {
         if (dto.getStartDate().isAfter(dto.getEndDate())) {
             throw new BusinessException("Start date cannot be after end date.");
         }

@@ -7,10 +7,11 @@ import com.desafio.desafio_java_prime.exceptions.NotFoundException;
 import com.desafio.desafio_java_prime.models.client.Client;
 import com.desafio.desafio_java_prime.repositories.client.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,10 +20,9 @@ public class ClientService {
 
     private final ClientRepository repository;
 
-    public List<ClientResponseDto> getAllClients() {
-        return repository.findAll().stream()
-                .map(ClientResponseDto::fromEntity)
-                .toList();
+    public Page<ClientResponseDto> getAllClients(Pageable pageable) {
+        return repository.findAll(pageable)
+                .map(ClientResponseDto::fromEntity);
     }
 
     public Client getClient(UUID id) {
